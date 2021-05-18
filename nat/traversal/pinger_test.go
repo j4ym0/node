@@ -59,8 +59,10 @@ func TestPinger_PingPeer_N_Connections(t *testing.T) {
 	peerConns := make(chan *net.UDPConn, 2)
 	go func() {
 		conns, err := consumer.PingProviderPeer(context.Background(), "127.0.0.1", cPorts, pPorts, 128, 2)
+		require.Nil(t, err)
 		require.NoError(t, err)
 		require.Len(t, conns, 2)
+
 		peerConns <- conns[0]
 		peerConns <- conns[1]
 	}()

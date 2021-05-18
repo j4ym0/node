@@ -72,6 +72,14 @@ type NewProposalOpts struct {
 	Quality        *Quality
 }
 
+type NewProposalOpts2 struct {
+	Location       *Location
+	Price          *Price
+	AccessPolicies []AccessPolicy
+	Contacts       []Contact
+	Quality        *Quality
+}
+
 // NewProposal creates a new proposal.
 func NewProposal(providerID, serviceType string, opts NewProposalOpts) ServiceProposal {
 	p := ServiceProposal{
