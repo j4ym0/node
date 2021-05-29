@@ -11,14 +11,31 @@ set -e
 source bin/helpers/output.sh
 
 printf "Building Alpine image..\n"
-docker build \
-    --build-arg BUILD_BRANCH=${BUILD_BRANCH} \
-    --build-arg BUILD_COMMIT=${BUILD_COMMIT} \
-    --build-arg BUILD_NUMBER=${BUILD_NUMBER} \
-    --build-arg BUILD_VERSION=${BUILD_VERSION} \
-    --file bin/docker/alpine/Dockerfile \
-    --tag myst:alpine \
-    .
-
+docker --help | grep 'buildx' &> /dev/null
+if [ $? == 0 ]; then
+  printf "Building Docker image with buildx\n"
+  if docker buildx ls | grep 'myst-builder'; then
+    docker buildx rm myst-builder
+  fi
+  docker buildx create --use --name myst-builder
+  docker buildx inspect --bootstrap
+  docker buildx build \
+      --build-arg BUILD_BRANCH=${BUILD_BRANCH} \
+      --build-arg BUILD_COMMIT=${BUILD_COMMIT} \
+      --build-arg BUILD_NUMBER=${BUILD_NUMBER} \
+      --build-arg BUILD_VERSION=${BUILD_VERSION} \
+      --file bin/docker/alpine/Dockerfile \
+      --tag myst:alpine \
+      .
+else
+  docker build \
+      --build-arg BUILD_BRANCH=${BUILD_BRANCH} \
+      --build-arg BUILD_COMMIT=${BUILD_COMMIT} \
+      --build-arg BUILD_NUMBER=${BUILD_NUMBER} \
+      --build-arg BUILD_VERSION=${BUILD_VERSION} \
+      --file bin/docker/alpine/Dockerfile \
+      --tag myst:alpine \
+      .
+fi
 print_success "Docker image building process complete!"
 exit 0
