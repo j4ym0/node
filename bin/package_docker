@@ -26,6 +26,7 @@ if [ $? == 0 ]; then
       --build-arg BUILD_VERSION=${BUILD_VERSION} \
       --file bin/docker/alpine/Dockerfile \
       --tag myst:alpine \
+      --platform linux/amd64,linux/arm64/v8,linux/arm/v7 \
       .
 else
   docker build \
